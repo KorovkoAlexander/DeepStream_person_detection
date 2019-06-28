@@ -1,0 +1,64 @@
+FROM nvcr.io/nvidia/deepstream:3.0-18.11
+
+RUN apt-get update
+
+RUN apt install wget
+# Set up CUDA DEV
+WORKDIR /tmp
+
+RUN wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-cudart-dev-10-0_10.0.130-1_amd64.deb
+
+RUN wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-cublas-dev-10-0_10.0.130-1_amd64.deb
+
+RUN wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-driver-dev-10-0_10.0.130-1_amd64.deb
+
+RUN dpkg -i cuda-driver-dev-10-0_10.0.130-1_amd64.deb
+
+RUN dpkg -i cuda-cublas-dev-10-0_10.0.130-1_amd64.deb
+
+RUN dpkg -i cuda-cudart-dev-10-0_10.0.130-1_amd64.deb
+
+
+# TensorRT installation
+
+RUN apt-get install -y --no-install-recommends software-properties-common
+RUN apt-get install -y --no-install-recommends python3-pip
+
+WORKDIR /nvidia
+
+COPY ./TensorRT-5.1.2.2 /nvidia/TensorRT-5.1.2.2
+
+ENV LD_LIBRARY_PATH="/nvidia/TensorRT-5.1.2.2/lib:${LD_LIBRARY_PATH}"
+
+WORKDIR /nvidia/TensorRT-5.1.2.2/python
+
+RUN pip3 install tensorrt-5.1.2.2-cp35-none-linux_x86_64.whl
+
+WORKDIR /nvidia/TensorRT-5.1.2.2/uff
+
+RUN pip3 install uff-0.6.3-py2.py3-none-any.whl
+
+WORKDIR /nvidia/TensorRT-5.1.2.2/graphsurgeon
+
+RUN pip3 install graphsurgeon-0.4.0-py2.py3-none-any.whl
+
+# Model installation
+
+RUN apt install -y --no-install-recommends libopencv-dev
+
+RUN apt install -y --no-install-recommends build-essential
+
+COPY ./model /model
+
+COPY ./Openpose /Openpose
+
+WORKDIR /Openpose/nvdsinfer_openpose
+
+RUN make
+
+WORKDIR /Openpose
+
+#CMD ["python3", "-u", "generate_config.py"]
+
+#CMD ["deepstream-app", "-c", "deepstream_app_config_fasterRCNN.txt"]
+

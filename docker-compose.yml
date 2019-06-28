@@ -1,0 +1,14 @@
+version: "2.3"
+
+services:
+  worker:
+    build: 'DeepStream_RTSP'
+    runtime: nvidia
+    hostname: 'DeepStream_RTSP'
+    restart: on-failure
+    environment:
+      INPUT_URI: "rtsp://root:Barco1984@172.17.12.203/axis-media/media.amp"
+      BITRATE: "10000"
+      OUTSTREAM_PORT: "1234"
+    ports: 
+    - "8080:1234"

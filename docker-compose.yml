@@ -10,5 +10,9 @@ services:
       INPUT_URI: "rtsp://root:Barco1984@172.17.12.203/axis-media/media.amp"
       BITRATE: "10000"
       OUTSTREAM_PORT: "1234"
+      BATCH_SIZE: 1
+      OUTPUT_WIDTH: 800
+      OUTPUT_HEIGHT: 600
+      LATENCY: 200
     ports: 
     - "8080:1234"
